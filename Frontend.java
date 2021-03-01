@@ -21,7 +21,7 @@ public class Frontend {
 		System.out.println("| the genre you wish to select/deselect.                        |");
 		System.out.println("----------------------------------------------------------------");
 		System.out.println();
-		
+
 
 		// input options
 		for (int i = 0; i < allGenres.size(); i++) {
@@ -33,7 +33,7 @@ public class Frontend {
 			System.out.print(String.valueOf(i+1) + ". ");
 			System.out.print(genre);
 
-			if (backend.getGenres().contains(genre)) 
+			if (backend.getGenres().contains(genre))
 				System.out.print(" ----> SELECTED");
 			else
 				System.out.print(" ----> ");
@@ -80,7 +80,7 @@ public class Frontend {
 		System.out.println("| To select/unselect a rating, type the number corresponding   |");
 		System.out.println("| to the range of ratings you wish to select/unselect.         |");
 		System.out.println("----------------------------------------------------------------\n");
-		
+
 		// Input options
 		for (int i = 0; i < 10; i++)  {
 			// converts i + 1 to String
@@ -93,7 +93,7 @@ public class Frontend {
 
 			// Indicator based on whether or not rating is selected
 			// for (String rating : backend.getAvgRatings()) {
-				
+
 			// 	if (rating.substring(0, 1).equals(numAsString)) System.out.print(" ----> SELECTED");
 
 			// }
@@ -108,12 +108,12 @@ public class Frontend {
 				// boolean isSelected = false;
 
 				for (String rating : backend.getAvgRatings()) {
-				
+
 					if (rating.substring(0, 1).equals(numAsString)) {
 						//isSelected = true;
 						backend.removeAvgRating(rating);
-					} 
-		
+					}
+
 				}
 
 				// if (!isSelected) backend.addAvgRating(numAsString);
@@ -133,7 +133,7 @@ public class Frontend {
 	 * Default interface for movie mapper (think home screen)
 	 */
 	public void baseMode() {
-	
+
 		// Welcome message
 		System.out.println("----------------------------------------------------------------");
 		System.out.println("|               WELCOME TO THE CS400 MOVIE MAPPER!             |");
@@ -149,7 +149,7 @@ public class Frontend {
 			for (int i = 0; i < movieList.size(); i++) {
 				System.out.println((i+1) + ". " + movieList.get(i).getTitle());
 			}
-		} 
+		}
 		System.out.println();
 
 		while (input.hasNext()) {

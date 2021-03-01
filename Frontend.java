@@ -2,10 +2,10 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Frontend {
-	private BackendDummy backend;
+	private Backend backend;
 	private Scanner input = new Scanner(System.in);
 
-	public void run(BackendDummy backend) {
+	public void run(Backend backend) {
 		this.backend = backend;
 	}
 
@@ -44,7 +44,7 @@ public class Frontend {
 		System.out.println();
 
 
-		while (input.hasNext() && input.hasNextInt()) {
+		while (input.hasNextInt()) {
 
 			try {
 				// Determines genre by what number was entered
@@ -65,10 +65,12 @@ public class Frontend {
 			}
 		}
 
-		while (input.hasNext() && input.hasNextLine()) {
+		// if letter is input
+		while (input.hasNextLine()) {
 			String key = input.nextLine();
 
-			if (key.equals("x")) baseMode();
+			// x key pressed --> return to base mode
+			if (key.equals("x")) baseMode(0);
 		}
 
 	}
@@ -125,42 +127,67 @@ public class Frontend {
 		while (input.hasNext() && input.hasNextLine()) {
 			String key = input.nextLine();
 
-			if (key.equals("x")) baseMode();
+			if (key.equals("x")) baseMode(0);
 		}
 	}
 
 	/**
 	 * Default interface for movie mapper (think home screen)
+	 * 
+	 * @param startingIndex the rank of the first movie to be shown
 	 */
-	public void baseMode() {
+	public void baseMode(int startingIndex) {
 	
 		// Welcome message
 		System.out.println("----------------------------------------------------------------");
 		System.out.println("|               WELCOME TO THE CS400 MOVIE MAPPER!             |");
 		System.out.println("----------------------------------------------------------------\n");
 
+		// List of top 3 movies (by average rating)
+		List<MovieInterface> movieList = backend.getThreeMovies(startingIndex);
 
-		System.out.println("Top 3 Movies: \n");
-		if (backend != null) {
-			// List of top 3 movies (by average rating)
-			List<MovieInterface> movieList = backend.getThreeMovies(0);
+		// Header changes if movieList is empty
+		if (movieList.isEmpty()) 
+			System.out.println("No movies to display");
 
-			// iterates through list of movies
-			for (int i = 0; i < movieList.size(); i++) {
+		else 
+			System.out.println("Top 3 Movies: \n");
+
+		// iterates through list of movies
+		for (int i = startingIndex; i < startingIndex+3; i++) {
+			// If current index does not exceed list size
+			if (i < movieList.size()) {
+
+				// Prints movie
 				System.out.println((i+1) + ". " + movieList.get(i).getTitle());
 			}
-		} 
+		}
 		System.out.println();
 
-		while (input.hasNext()) {
+		// if input is a number
+		while(input.hasNextInt()) {
+			int newIndex = input.nextInt() - 1;
+
+			if (newIndex >= movieList.size()) continue;
+
+			// scrolls to given number input
+			baseMode(newIndex);
+		}
+
+		// if input is a letter
+		while (input.hasNextLine()) {
 			String key = input.nextLine();
 
+			// x key pressed --> program exits
 			if (key.equals("x")) break;
 
+			// g key pressed --> genre mode
 			if (key.equals("g")) genreMode();
 
+			// r key pressed --> rating mode
 			if (key.equals("r")) ratingMode();
 		}
+		// Exit message
 		System.out.println("Quiting...");
 		System.exit(0);
 	}
@@ -170,8 +197,8 @@ public class Frontend {
 		//BackendDummy dummyBackend = new BackendDummy(args);
 
 		Frontend frontend = new Frontend();
-		frontend.run(new BackendDummy(args));
+		frontend.run(new Backend(args));
 
-		frontend.baseMode();
+		frontend.baseMode(0);
 	}
 }

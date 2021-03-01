@@ -2,10 +2,10 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Frontend {
-	private Backend backend;
+	private BackendDummy backend;
 	private Scanner input = new Scanner(System.in);
 
-	public void run(Backend backend) {
+	public void run(BackendDummy backend) {
 		this.backend = backend;
 	}
 
@@ -197,7 +197,7 @@ public class Frontend {
 		//BackendDummy dummyBackend = new BackendDummy(args);
 
 		Frontend frontend = new Frontend();
-		frontend.run(new Backend(args));
+		frontend.run(new BackendDummy(args));
 
 		frontend.baseMode(0);
 	}

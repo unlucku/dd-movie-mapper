@@ -3,58 +3,29 @@
 // Email: mcorbishley@wisc.edu
 // Team:  Red Team
 // Group: DD
-// TA: dkiel2@wisc.edu 
+// TA: dkiel2@wisc.edu
 // Lecturer: Florian
 // Notes to Grader: N/A
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.zip.DataFormatException;
 
-public class Backend implements BackendInterface{
-	private HashTableMap<String, List<Movie>> genres; //hash table using genres as keys
-	private HashTableMap<String, List<Movie>> ratings; //hash table using ratings as keys
-	private MovieDataReader dataReader; //the reader we will use to pull our info from the file
+public class Backend {
+	private HashMap<String, List<Movie>> genres; //hash table using genres as keys
+	private HashMap<String, List<Movie>> ratings; //hash table using ratings as keys
 	private List<MovieInterface> allMovies; //all movies in the incoming data file
 	private List<String> setGenres; //all genres that are currently set in the hash table
 	private List<String> setRatings; //all ratings that are currently set in the hash table
-	
+
 	public Backend(String[]args) {
-		genres = new HashTableMap(); //initialize
-		ratings = new HashTableMap(); //initialize
-		List<String> setRatings = new ArrayList<String>(); //initialize
-		List<String> setGenres = new ArrayList<String>(); //initialize
-		try {
-			File data = new File(args[0]); //file that we're working with
-			FileReader fileReader = new FileReader(data); //fileReader for that file
-			dataReader = new MovieDataReader(fileReader); //MovieDataReader initialized
-			allMovies = dataReader.readDataSet(fileReader); //list of all movies with their attributes
-		}
-		catch(FileNotFoundException e) {
-			System.out.println("File Not Found"); //if file isn't found when used in constructor
-		}
-		catch(IOException e) {
-			System.out.println("Error Importing file"); //if there's an error importing a file
-		}
-		
-		catch(DataFormatException e) {
-			System.out.println("Invalid format for file"); //if the data format is incorrect
-		}
+		genres = new HashMap<String, List<Movie>>(); //initialize
+		ratings = new HashMap<String, List<Movie>>(); //initialize
+		setRatings = new ArrayList<String>(); //initialize
+		setGenres = new ArrayList<String>(); //initialize
+		allMovies = new ArrayList<MovieInterface>();
+		MovieReader.init(args[0]);
+		allMovies.addAll(Movie.movies);
 	}
-
-	public Backend(MovieDataReader s) {
-		genres = new HashTableMap(); //initialize
-		ratings = new HashTableMap(); //initialize
-		List<String> setRatings = new ArrayList<String>(); //initialize
-		List<String> setGenres = new ArrayList<String>(); //initialize
-		dataReader = s; //initialize
-	}
-
-	@Override
 	public void addGenre(String genre) {
 		List<Movie> selectedGenres = new ArrayList<Movie>();
 		for(int i=0;i<allMovies.size();i++) {
@@ -72,7 +43,6 @@ public class Backend implements BackendInterface{
 	 * as the hash key for where the values are stored.
 	 * The rating is also added to the setRatings list.
 	 */
-	@Override
 	public void addAvgRating(String rating) {
 		setRatings.add(rating);
 		ArrayList<Movie> selectedRatings = new ArrayList<Movie>();
@@ -83,7 +53,7 @@ public class Backend implements BackendInterface{
 				selectedRatings.add((Movie)allMovies.get(i));
 		}
 		ratings.put(rating, selectedRatings);
-		
+
 	}
 
 	/**
@@ -91,7 +61,6 @@ public class Backend implements BackendInterface{
 	 * and all the values associated with it. It is also
 	 * removed from the setGenres ArrayList.
 	 */
-	@Override
 	public void removeGenre(String genre) {
 		genres.remove(genre);
 		setGenres.remove(genre);
@@ -102,7 +71,6 @@ public class Backend implements BackendInterface{
 	 * and all the values associated with it. It is also
 	 * removed from the setRatings ArrayList.
 	 */
-	@Override
 	public void removeAvgRating(String rating) {
 		ratings.remove(rating);
 		setRatings.remove(rating);
@@ -111,7 +79,6 @@ public class Backend implements BackendInterface{
 	/**
 	 * @returns the list of genres currently set in the hash table
 	 */
-	@Override
 	public List<String> getGenres() {
 		return setGenres;
 	}
@@ -119,7 +86,6 @@ public class Backend implements BackendInterface{
 	/**
 	 * @returns the list of avgRatings currently set in the hash table
 	 */
-	@Override
 	public List<String> getAvgRatings() {
 		return setRatings;
 	}
@@ -128,7 +94,6 @@ public class Backend implements BackendInterface{
 	 * @returns the total number of movies in the resulting
 	 * set (any movies with genres or avg ratings set)
 	 */
-	@Override
 	public int getNumberOfMovies() {
 		int total = 0; //integer used to count total number of movies in the resulting set
 		for(int i=0;i<allMovies.size();i++) {
@@ -144,7 +109,6 @@ public class Backend implements BackendInterface{
 	 * from the int startingIndex parameter and putting them
 	 * in order from greatest to least avgVote.
 	 */
-	@Override
 	public List<MovieInterface> getThreeMovies(int startingIndex) {
 		List<MovieInterface> threeMovies = new ArrayList<MovieInterface>(); //list of 3 movies to be returned
 		List<MovieInterface> withinParam = new ArrayList<MovieInterface>(); //list of movies that fit the parameters
@@ -153,7 +117,7 @@ public class Backend implements BackendInterface{
 				withinParam.add(allMovies.get(i));
 			}
 		}
-		
+
 		MovieInterface movie1 = withinParam.get(startingIndex);
 		Float vote1 = movie1.getAvgVote();
 		MovieInterface movie2 = withinParam.get(startingIndex+1);
@@ -161,7 +125,7 @@ public class Backend implements BackendInterface{
 		MovieInterface movie3 = withinParam.get(startingIndex+2);
 		Float vote3 = movie3.getAvgVote();
 		Float max = Math.max(Math.min(vote1, vote2), vote3);
-		
+
 		if(max==vote1) {
 			threeMovies.add(movie1);
 			Float max2 = Math.max(vote2, vote3);
@@ -174,7 +138,7 @@ public class Backend implements BackendInterface{
 				threeMovies.add(movie2);
 			}
 		}
-		
+
 		if(max==vote2) {
 			threeMovies.add(movie2);
 			Float max3 = Math.max(vote1, vote3);
@@ -187,7 +151,7 @@ public class Backend implements BackendInterface{
 				threeMovies.add(movie1);
 			}
 		}
-		
+
 		if(max==vote3) {
 			threeMovies.add(movie3);
 			Float max4 = Math.max(vote1, vote2);
@@ -210,7 +174,6 @@ public class Backend implements BackendInterface{
 	 * is returned at the end of the method.
 	 * @returns a list of all genres across all the movies
 	 */
-	@Override
 	public List<String> getAllGenres() {
 		List<String> allGenres = new ArrayList<String>(); //list of all the genres to be returned at the end
 		for(int i=0;i<allMovies.size();i++) { //loop through all the movie objects

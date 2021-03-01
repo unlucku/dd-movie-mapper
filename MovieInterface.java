@@ -7,7 +7,7 @@ public interface MovieInterface extends Comparable<MovieInterface>{
 	public List<String> getGenres();
 	public String getDirector();
 	public String getDescription();
-	public double getAvgVote();
+	public Float getAvgVote();
 
 	public int compareTo(MovieInterface e);
 }

@@ -1,10 +1,12 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class MovieReader {
 
 	public static void init(String path) {
+		Movie.movies = new ArrayList<Movie>();
 		String[] text = read(path).split("\n");
 		for (int i = 0; i < text.length; i++) {
 			String[] textSplit = text[i].split(",");
@@ -28,6 +30,7 @@ public class MovieReader {
 			System.out.println("Finished reading file " + path);
 			reader.close();
 		} catch (IOException e) {
+			System.out.println("File Not Found");
 			sb.append("404 for " + path);
 			e.printStackTrace();
 		}

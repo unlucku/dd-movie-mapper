@@ -7,7 +7,7 @@ public class Movie implements MovieInterface {
 	int year;
 	List<String> genre;
 	String director;
-	double avgVote;
+	Float avgVote;
 	String description;
 
 	public Movie(String title, int year, String director, String description, String genre) {
@@ -15,7 +15,7 @@ public class Movie implements MovieInterface {
 		this.year = year;
 		this.director = director;
 		this.description = description;
-		this.avgVote = 0.0;
+		this.avgVote = 0.0F;
 		this.genre = new ArrayList<String>();
 		this.genre.add(genre);
 		movies.add(this);
@@ -47,14 +47,21 @@ public class Movie implements MovieInterface {
 	}
 
 	@Override
-	public double getAvgVote() {
+	public Float getAvgVote() {
 		return avgVote;
 	}
 
 	@Override
 	public int compareTo(MovieInterface e) {
-		//todo
-		return 0;
+		if (this.avgVote > e.getAvgVote()) {
+			return 1;
+		}
+		else if (this.avgVote < e.getAvgVote()) {
+			return -1;
+		}
+		else {
+			return 0;
+		}
 	}
 
 }

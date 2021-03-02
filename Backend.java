@@ -6,25 +6,54 @@
 // TA: dkiel2@wisc.edu
 // Lecturer: Florian
 // Notes to Grader: N/A
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.zip.DataFormatException;
 
-public class Backend {
+public class Backend implements BackendInterface{
 	private HashTableMap<String, List<Movie>> genres; //hash table using genres as keys
 	private HashTableMap<String, List<Movie>> ratings; //hash table using ratings as keys
-	public List<MovieInterface> allMovies; //all movies in the incoming data file
+	private MovieDataReader dataReader; //the reader we will use to pull our info from the file
+	private List<MovieInterface> allMovies; //all movies in the incoming data file
 	private List<String> setGenres; //all genres that are currently set in the hash table
 	private List<String> setRatings; //all ratings that are currently set in the hash table
 
 	public Backend(String[]args) {
-		genres = new HashTableMap<String, List<Movie>>(); //initialize
-		ratings = new HashTableMap<String, List<Movie>>(); //initialize
-		setRatings = new ArrayList<String>(); //initialize
-		setGenres = new ArrayList<String>(); //initialize
-		allMovies = new ArrayList<MovieInterface>();
-		MovieReader.init("movies.csv", this);
+		genres = new HashTableMap(); //initialize
+		ratings = new HashTableMap(); //initialize
+		List<String> setRatings = new ArrayList<String>(); //initialize
+		List<String> setGenres = new ArrayList<String>(); //initialize
+		try {
+			File data = new File(args[0]); //file that we're working with
+			FileReader fileReader = new FileReader(data); //fileReader for that file
+			dataReader = new MovieDataReader(fileReader); //MovieDataReader initialized
+			allMovies = dataReader.readDataSet(fileReader); //list of all movies with their attributes
+		}
+		catch(FileNotFoundException e) {
+			System.out.println("File Not Found"); //if file isn't found when used in constructor
+		}
+		catch(IOException e) {
+			System.out.println("Error Importing file"); //if there's an error importing a file
+		}
+
+		catch(DataFormatException e) {
+			System.out.println("Invalid format for file"); //if the data format is incorrect
+		}
 	}
+
+	public Backend(MovieDataReader s) {
+		genres = new HashTableMap(); //initialize
+		ratings = new HashTableMap(); //initialize
+		List<String> setRatings = new ArrayList<String>(); //initialize
+		List<String> setGenres = new ArrayList<String>(); //initialize
+		dataReader = s; //initialize
+	}
+
+	@Override
 	public void addGenre(String genre) {
 		List<Movie> selectedGenres = new ArrayList<Movie>();
 		for(int i=0;i<allMovies.size();i++) {
@@ -42,6 +71,7 @@ public class Backend {
 	 * as the hash key for where the values are stored.
 	 * The rating is also added to the setRatings list.
 	 */
+	@Override
 	public void addAvgRating(String rating) {
 		setRatings.add(rating);
 		ArrayList<Movie> selectedRatings = new ArrayList<Movie>();
@@ -60,6 +90,7 @@ public class Backend {
 	 * and all the values associated with it. It is also
 	 * removed from the setGenres ArrayList.
 	 */
+	@Override
 	public void removeGenre(String genre) {
 		genres.remove(genre);
 		setGenres.remove(genre);
@@ -70,6 +101,7 @@ public class Backend {
 	 * and all the values associated with it. It is also
 	 * removed from the setRatings ArrayList.
 	 */
+	@Override
 	public void removeAvgRating(String rating) {
 		ratings.remove(rating);
 		setRatings.remove(rating);
@@ -78,6 +110,7 @@ public class Backend {
 	/**
 	 * @returns the list of genres currently set in the hash table
 	 */
+	@Override
 	public List<String> getGenres() {
 		return setGenres;
 	}
@@ -85,6 +118,7 @@ public class Backend {
 	/**
 	 * @returns the list of avgRatings currently set in the hash table
 	 */
+	@Override
 	public List<String> getAvgRatings() {
 		return setRatings;
 	}
@@ -93,6 +127,7 @@ public class Backend {
 	 * @returns the total number of movies in the resulting
 	 * set (any movies with genres or avg ratings set)
 	 */
+	@Override
 	public int getNumberOfMovies() {
 		int total = 0; //integer used to count total number of movies in the resulting set
 		for(int i=0;i<allMovies.size();i++) {
@@ -108,11 +143,12 @@ public class Backend {
 	 * from the int startingIndex parameter and putting them
 	 * in order from greatest to least avgVote.
 	 */
+	@Override
 	public List<MovieInterface> getThreeMovies(int startingIndex) {
 		List<MovieInterface> threeMovies = new ArrayList<MovieInterface>(); //list of 3 movies to be returned
 		List<MovieInterface> withinParam = new ArrayList<MovieInterface>(); //list of movies that fit the parameters
 		for(int i=0;i<allMovies.size();i++) {
-			if(setGenres.contains(allMovies.get(i).getGenres())|| setRatings.contains(Float.toString((allMovies.get(i).getAvgVote())))) {
+			if(setGenres.contains(allMovies.get(i).getGenres())||setRatings.contains(Float.toString((allMovies.get(i).getAvgVote())))) {
 				withinParam.add(allMovies.get(i));
 			}
 		}
@@ -167,23 +203,13 @@ public class Backend {
 	}
 
 	/**
-	 * @returns a list of the top 3 movies
-	 */
-	public List<MovieInterface> getTopThree() {
-		List<MovieInterface> testList = new ArrayList<MovieInterface>();
-		testList.addAll(allMovies);
-		Collections.sort(testList);
-		testList = testList.subList(allMovies.size()-3, allMovies.size());
-		return testList;
-	}
-
-	/**
 	 * getAllGenres loops through the allMovies array list
 	 * and if the allGenres array list doesn't contain
 	 * one of the movies genres, then it is added to the list that
 	 * is returned at the end of the method.
 	 * @returns a list of all genres across all the movies
 	 */
+	@Override
 	public List<String> getAllGenres() {
 		List<String> allGenres = new ArrayList<String>(); //list of all the genres to be returned at the end
 		for(int i=0;i<allMovies.size();i++) { //loop through all the movie objects

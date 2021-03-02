@@ -144,7 +144,7 @@ public class Frontend {
 		System.out.println("----------------------------------------------------------------\n");
 
 		// List of top 3 movies (by average rating)
-		List<MovieInterface> movieList = backend.getTopThree();
+		List<MovieInterface> movieList = backend.getThreeMovies(startingIndex);
 
 		// Header changes if movieList is empty
 		if (movieList.isEmpty())

@@ -7,24 +7,23 @@
 // Lecturer: Florian
 // Notes to Grader: N/A
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 
 public class Backend {
-	private HashMap<String, List<Movie>> genres; //hash table using genres as keys
-	private HashMap<String, List<Movie>> ratings; //hash table using ratings as keys
-	private List<MovieInterface> allMovies; //all movies in the incoming data file
+	private HashTableMap<String, List<Movie>> genres; //hash table using genres as keys
+	private HashTableMap<String, List<Movie>> ratings; //hash table using ratings as keys
+	public List<MovieInterface> allMovies; //all movies in the incoming data file
 	private List<String> setGenres; //all genres that are currently set in the hash table
 	private List<String> setRatings; //all ratings that are currently set in the hash table
 
 	public Backend(String[]args) {
-		genres = new HashMap<String, List<Movie>>(); //initialize
-		ratings = new HashMap<String, List<Movie>>(); //initialize
+		genres = new HashTableMap<String, List<Movie>>(); //initialize
+		ratings = new HashTableMap<String, List<Movie>>(); //initialize
 		setRatings = new ArrayList<String>(); //initialize
 		setGenres = new ArrayList<String>(); //initialize
 		allMovies = new ArrayList<MovieInterface>();
-		MovieReader.init(args[0]);
-		allMovies.addAll(Movie.movies);
+		MovieReader.init("movies.csv", this);
 	}
 	public void addGenre(String genre) {
 		List<Movie> selectedGenres = new ArrayList<Movie>();
@@ -113,7 +112,7 @@ public class Backend {
 		List<MovieInterface> threeMovies = new ArrayList<MovieInterface>(); //list of 3 movies to be returned
 		List<MovieInterface> withinParam = new ArrayList<MovieInterface>(); //list of movies that fit the parameters
 		for(int i=0;i<allMovies.size();i++) {
-			if(setGenres.contains(allMovies.get(i).getGenres())||setRatings.contains(Float.toString((allMovies.get(i).getAvgVote())))) {
+			if(setGenres.contains(allMovies.get(i).getGenres())|| setRatings.contains(Float.toString((allMovies.get(i).getAvgVote())))) {
 				withinParam.add(allMovies.get(i));
 			}
 		}
@@ -165,6 +164,17 @@ public class Backend {
 			}
 		}
 		return threeMovies;
+	}
+
+	/**
+	 * @returns a list of the top 3 movies
+	 */
+	public List<MovieInterface> getTopThree() {
+		List<MovieInterface> testList = new ArrayList<MovieInterface>();
+		testList.addAll(allMovies);
+		Collections.sort(testList);
+		testList = testList.subList(allMovies.size()-3, allMovies.size());
+		return testList;
 	}
 
 	/**

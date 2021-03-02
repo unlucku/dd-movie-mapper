@@ -21,7 +21,7 @@ public class Frontend {
 		System.out.println("| the genre you wish to select/deselect.                        |");
 		System.out.println("----------------------------------------------------------------");
 		System.out.println();
-		
+
 
 		// input options
 		for (int i = 0; i < allGenres.size(); i++) {
@@ -33,7 +33,7 @@ public class Frontend {
 			System.out.print(String.valueOf(i+1) + ". ");
 			System.out.print(genre);
 
-			if (backend.getGenres().contains(genre)) 
+			if (backend.getGenres().contains(genre))
 				System.out.print(" ----> SELECTED");
 			else
 				System.out.print(" ----> ");
@@ -82,7 +82,7 @@ public class Frontend {
 		System.out.println("| To select/unselect a rating, type the number corresponding   |");
 		System.out.println("| to the range of ratings you wish to select/unselect.         |");
 		System.out.println("----------------------------------------------------------------\n");
-		
+
 		// Input options
 		for (int i = 0; i < 10; i++)  {
 			// converts i + 1 to String
@@ -95,7 +95,7 @@ public class Frontend {
 
 			// Indicator based on whether or not rating is selected
 			// for (String rating : backend.getAvgRatings()) {
-				
+
 			// 	if (rating.substring(0, 1).equals(numAsString)) System.out.print(" ----> SELECTED");
 
 			// }
@@ -110,12 +110,12 @@ public class Frontend {
 				// boolean isSelected = false;
 
 				for (String rating : backend.getAvgRatings()) {
-				
+
 					if (rating.substring(0, 1).equals(numAsString)) {
 						//isSelected = true;
 						backend.removeAvgRating(rating);
-					} 
-		
+					}
+
 				}
 
 				// if (!isSelected) backend.addAvgRating(numAsString);
@@ -133,24 +133,24 @@ public class Frontend {
 
 	/**
 	 * Default interface for movie mapper (think home screen)
-	 * 
+	 *
 	 * @param startingIndex the rank of the first movie to be shown
 	 */
 	public void baseMode(int startingIndex) {
-	
+
 		// Welcome message
 		System.out.println("----------------------------------------------------------------");
 		System.out.println("|               WELCOME TO THE CS400 MOVIE MAPPER!             |");
 		System.out.println("----------------------------------------------------------------\n");
 
 		// List of top 3 movies (by average rating)
-		List<MovieInterface> movieList = backend.getThreeMovies(startingIndex);
+		List<MovieInterface> movieList = backend.getTopThree();
 
 		// Header changes if movieList is empty
-		if (movieList.isEmpty()) 
+		if (movieList.isEmpty())
 			System.out.println("No movies to display");
 
-		else 
+		else
 			System.out.println("Top 3 Movies: \n");
 
 		// iterates through list of movies

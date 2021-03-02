@@ -30,7 +30,7 @@ public class Backend implements BackendInterface{
 		try {
 			File data = new File(args[0]); //file that we're working with
 			FileReader fileReader = new FileReader(data); //fileReader for that file
-			dataReader = new MovieDataReader(fileReader); //MovieDataReader initialized
+			dataReader = new MovieDataReader(); //MovieDataReader initialized
 			allMovies = dataReader.readDataSet(fileReader); //list of all movies with their attributes
 		}
 		catch(FileNotFoundException e) {

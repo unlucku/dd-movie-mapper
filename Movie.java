@@ -26,7 +26,7 @@ public class Movie implements MovieInterface {
 	}
 
 	@Override
-	public int getYear() {
+	public Integer getYear() {
 		return this.year;
 	}
 
@@ -47,7 +47,7 @@ public class Movie implements MovieInterface {
 
 	@Override
 	public Float getAvgVote() {
-		return avgVote;
+		return this.avgVote;
 	}
 
 	@Override
@@ -61,6 +61,16 @@ public class Movie implements MovieInterface {
 		else {
 			return 0;
 		}
+	}
+
+	@Override
+	public String toString() {
+		return "Name: " + this.title + "\n" +
+				"Year: " + this.year + "\n" +
+				"Genre: " + String.join(", ", this.genre) + "\n" +
+				"Director: " + this.director + "\n" +
+				"Description: " + this.description + "\n" +
+				"Avg. Vote: " + this.avgVote + "\n";
 	}
 
 }

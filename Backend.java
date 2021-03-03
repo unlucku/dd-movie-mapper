@@ -50,8 +50,8 @@ public class Backend implements BackendInterface{
 	public Backend(Reader s) {
 		genres = new HashTableMap(); //initialize
 		ratings = new HashTableMap(); //initialize
-		setRatings = new ArrayList<String>(); //initialize
-		setGenres = new ArrayList<String>(); //initialize
+		List<String> setRatings = new ArrayList<String>(); //initialize
+		List<String> setGenres = new ArrayList<String>(); //initialize
 		try {
 			dataReader = new MovieDataReader();
 			allMovies = dataReader.readDataSet(s);
@@ -88,13 +88,15 @@ public class Backend implements BackendInterface{
 	 */
 	@Override
 	public void addAvgRating(String rating) {
-		setRatings.add(rating.substring(0,1));
+		setRatings.add(rating);
 		ArrayList<Movie> selectedRatings = new ArrayList<Movie>();
 		for(int i=0;i<allMovies.size();i++) {
 			String k = Float.toString((allMovies.get(i).getAvgVote()));
 			String range = k.substring(0,1);
-			if(range.equals(k))
+			if(range.equals(k)) {
 				selectedRatings.add((Movie)allMovies.get(i));
+				break;
+			}
 		}
 		ratings.put(rating, selectedRatings);
 
@@ -108,7 +110,10 @@ public class Backend implements BackendInterface{
 	@Override
 	public void removeGenre(String genre) {
 		genres.remove(genre);
-		setGenres.remove(genre);
+		for(int i=0;i<setGenres.size();i++) {
+			if(setGenres.get(i).equals(genre))
+				setGenres.remove(i);
+		}
 	}
 
 	/**
@@ -119,7 +124,10 @@ public class Backend implements BackendInterface{
 	@Override
 	public void removeAvgRating(String rating) {
 		ratings.remove(rating);
-		setRatings.remove(rating);
+		for(int i=0;i<setRatings.size();i++) {
+			if(setRatings.get(i).equals(rating))
+				setRatings.remove(i);
+		}
 	}
 
 	/**
@@ -146,8 +154,15 @@ public class Backend implements BackendInterface{
 	public int getNumberOfMovies() {
 		int total = 0; //integer used to count total number of movies in the resulting set
 		for(int i=0;i<allMovies.size();i++) {
-			if(setGenres.contains(allMovies.get(i).getGenres())||setRatings.contains(Float.toString((allMovies.get(i).getAvgVote()))))
-				total++;
+			String rating = Float.toString(allMovies.get(i).getAvgVote());
+			if(rating!=null) {
+				if(ratings.containsKey(rating))
+					total++;
+			}
+			if(genres!=null) {
+				if(setGenres.contains(allMovies.get(i).getGenres()))
+					total++;
+			}
 		}
 		return total; //total number of movies in the resulting set
 	}
@@ -164,27 +179,20 @@ public class Backend implements BackendInterface{
 		List<MovieInterface> withinParam = new ArrayList<MovieInterface>(); //list of movies that fit the parameters
 		List<MovieInterface> withinGenre = new ArrayList<MovieInterface>(); //all movies that match at least 1 set genre
 		for(int i=0;i<allMovies.size();i++) { //loop through the set of all movies
-
 			List<String> movieIGenres = allMovies.get(i).getGenres(); //all genres associated with the movie at location i
 			for(int w=0;w<allMovies.get(i).getGenres().size();w++) { //loop through the list of genres for movie at location i
 				if(setGenres.contains(movieIGenres.get(w))) { //if the setGenres contains at least 1 of the genres for movie at location i
 					withinGenre.add(allMovies.get(i)); //the movie is then added to within genre
 					break; //and we break out of the inside loop
 				}
-			}
-
-			int ratingAsInt = (int)(float) allMovies.get(i).getAvgVote();
-			if(withinGenre.contains(allMovies.get(i))&&setRatings.contains(String.valueOf(ratingAsInt))) {
-				
+			if(withinGenre.contains(allMovies.get(i))&&setRatings.contains(Float.toString((allMovies.get(i).getAvgVote())))) {
 				withinParam.add(allMovies.get(i)); //if movie at location i is in the withinGenres list and 
 				//the rating for movie i is in setRatings, it is then added to the withinParam list
+				}
 			}
 		}
-
-		if(withinParam.isEmpty()) {
-			//Empty list returned if within
+		if(withinParam.isEmpty()) //Empty list returned if within
 			return withinParam;
-		}
 
 		threeMovies.add(withinParam.get(startingIndex));
 		threeMovies.add(withinParam.get(startingIndex+1));

@@ -1,13 +1,11 @@
+import java.io.StringReader;
 import java.util.List;
 import java.util.Scanner;
 
 public class Frontend {
 	private Backend backend;
-	private Scanner input = new Scanner(System.in);
+	private Scanner input;
 
-	public void run(Backend backend) {
-		this.backend = backend;
-	}
 
 	/**
 	 * Frontend interface for picking movie genres
@@ -94,37 +92,38 @@ public class Frontend {
 			System.out.print(numAsString + " - " + String.valueOf(i+1.999f));
 
 			// Indicator based on whether or not rating is selected
-			// for (String rating : backend.getAvgRatings()) {
+			for (String rating : backend.getAvgRatings()) {
 
-			// 	if (rating.substring(0, 1).equals(numAsString)) System.out.print(" ----> SELECTED");
+				if (rating.substring(0, 1).equals(numAsString)) System.out.print(" ----> SELECTED");
 
-			// }
+			}
 			System.out.println();
 		}
 		System.out.println();
 
-		while (input.hasNext() && input.hasNextInt()) {
+		while (input.hasNextInt()) {
+			int numberInput = input.nextInt();
 
-			if (input.nextInt() < 10) {
-				String numAsString = String.valueOf(input.nextInt());
-				// boolean isSelected = false;
+			if (numberInput < 10) {
+				String numAsString = String.valueOf(numberInput);
+				boolean isSelected = false;
 
 				for (String rating : backend.getAvgRatings()) {
 
 					if (rating.substring(0, 1).equals(numAsString)) {
-						//isSelected = true;
+						isSelected = true;
 						backend.removeAvgRating(rating);
 					}
 
 				}
 
-				// if (!isSelected) backend.addAvgRating(numAsString);
+				if (!isSelected) backend.addAvgRating(numAsString);
 
 				ratingMode();
 			}
 		}
 
-		while (input.hasNext() && input.hasNextLine()) {
+		while (input.hasNextLine()) {
 			String key = input.nextLine();
 
 			if (key.equals("x")) baseMode(0);
@@ -146,23 +145,30 @@ public class Frontend {
 		// List of top 3 movies (by average rating)
 		List<MovieInterface> movieList = backend.getThreeMovies(startingIndex);
 
-		// Header changes if movieList is empty
-		if (movieList.isEmpty())
-			System.out.println("No movies to display");
-
-		else
+		// Does not loop through list ifempty
+		if (movieList.isEmpty()) {
+			System.out.println("No movies to display\n");
+		} else {
+			System.out.println("----------------------------------------------------------------");
 			System.out.println("Top 3 Movies: \n");
 
-		// iterates through list of movies
-		for (int i = startingIndex; i < startingIndex+3; i++) {
-			// If current index does not exceed list size
-			if (i < movieList.size()) {
-
-				// Prints movie
-				System.out.println((i+1) + ". " + movieList.get(i).getTitle());
+			// iterates through list of movies
+			int rank = 1;
+			for (MovieInterface movie : movieList) {
+				System.out.print(rank + ". ");
+				System.out.print(movie.getTitle() + " (");
+				System.out.print(movie.getAvgVote() + ")\n");
+				rank++;
 			}
+			System.out.println("----------------------------------------------------------------\n");
 		}
-		System.out.println();
+
+			
+
+		// Mode options
+		System.out.println("g: Genre Mode");
+		System.out.println("r: Rating Mode");
+		System.out.println("x: Exit\n");
 
 		// if input is a number
 		while(input.hasNextInt()) {
@@ -188,17 +194,19 @@ public class Frontend {
 			if (key.equals("r")) ratingMode();
 		}
 		// Exit message
-		System.out.println("Quiting...");
-		System.exit(0);
+		System.out.println("Exiting...");
+		return;
+	}
+
+	public void run(Backend backend) {
+
+		this.backend = backend;
+		this.input = new Scanner(System.in);
+
+		baseMode(0);
 	}
 
 	public static void main(String[] args) {
-
-		//BackendDummy dummyBackend = new BackendDummy(args);
-
-		Frontend frontend = new Frontend();
-		frontend.run(new Backend(args));
-
-		frontend.baseMode(0);
+		new Frontend().run(new Backend(args));
 	}
 }

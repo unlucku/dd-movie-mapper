@@ -183,7 +183,6 @@ public class Backend implements BackendInterface{
 
 		if(withinParam.isEmpty()) {
 			//Empty list returned if within
-			System.out.println(getAvgRatings());
 			return withinParam;
 		}
 

@@ -10,7 +10,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.zip.DataFormatException;
 
@@ -25,8 +27,8 @@ public class Backend implements BackendInterface{
 	public Backend(String[]args) {
 		genres = new HashTableMap(); //initialize
 		ratings = new HashTableMap(); //initialize
-		List<String> setRatings = new ArrayList<String>(); //initialize
-		List<String> setGenres = new ArrayList<String>(); //initialize
+		setRatings = new ArrayList<String>(); //initialize
+		setGenres = new ArrayList<String>(); //initialize
 		try {
 			File data = new File(args[0]); //file that we're working with
 			FileReader fileReader = new FileReader(data); //fileReader for that file
@@ -45,12 +47,25 @@ public class Backend implements BackendInterface{
 		}
 	}
 
-	public Backend(MovieDataReader s) {
+	public Backend(Reader s) {
 		genres = new HashTableMap(); //initialize
 		ratings = new HashTableMap(); //initialize
 		List<String> setRatings = new ArrayList<String>(); //initialize
 		List<String> setGenres = new ArrayList<String>(); //initialize
-		dataReader = s; //initialize
+		try {
+			dataReader = new MovieDataReader();
+			allMovies = dataReader.readDataSet(s);
+		}
+		catch(FileNotFoundException e) {
+			System.out.println("File Not Found"); //if file isn't found when used in constructor
+		}
+		catch(IOException e) {
+			System.out.println("Error Importing file"); //if there's an error importing a file
+		}
+
+		catch(DataFormatException e) {
+			System.out.println("Invalid format for file"); //if the data format is incorrect
+		}
 	}
 
 	@Override
@@ -147,59 +162,29 @@ public class Backend implements BackendInterface{
 	public List<MovieInterface> getThreeMovies(int startingIndex) {
 		List<MovieInterface> threeMovies = new ArrayList<MovieInterface>(); //list of 3 movies to be returned
 		List<MovieInterface> withinParam = new ArrayList<MovieInterface>(); //list of movies that fit the parameters
-		for(int i=0;i<allMovies.size();i++) {
-			if(setGenres.contains(allMovies.get(i).getGenres())||setRatings.contains(Float.toString((allMovies.get(i).getAvgVote())))) {
-				withinParam.add(allMovies.get(i));
+		List<MovieInterface> withinGenre = new ArrayList<MovieInterface>(); //all movies that match at least 1 set genre
+		for(int i=0;i<allMovies.size();i++) { //loop through the set of all movies
+			List<String> movieIGenres = allMovies.get(i).getGenres(); //all genres associated with the movie at location i
+			for(int w=0;w<allMovies.get(i).getGenres().size();w++) { //loop through the list of genres for movie at location i
+				if(setGenres.contains(movieIGenres.get(w))) { //if the setGenres contains at least 1 of the genres for movie at location i
+					withinGenre.add(allMovies.get(i)); //the movie is then added to within genre
+					break; //and we break out of the inside loop
+				}
+			if(withinGenre.contains(allMovies.get(i))&&setRatings.contains(Float.toString((allMovies.get(i).getAvgVote())))) {
+				withinParam.add(allMovies.get(i)); //if movie at location i is in the withinGenres list and 
+				//the rating for movie i is in setRatings, it is then added to the withinParam list
+				}
 			}
 		}
+		if(withinParam.isEmpty()) //Empty list returned if within
+			return withinParam;
 
-		MovieInterface movie1 = withinParam.get(startingIndex);
-		Float vote1 = movie1.getAvgVote();
-		MovieInterface movie2 = withinParam.get(startingIndex+1);
-		Float vote2 = movie2.getAvgVote();
-		MovieInterface movie3 = withinParam.get(startingIndex+2);
-		Float vote3 = movie3.getAvgVote();
-		Float max = Math.max(Math.min(vote1, vote2), vote3);
-
-		if(max==vote1) {
-			threeMovies.add(movie1);
-			Float max2 = Math.max(vote2, vote3);
-			if(max2==vote2) {
-				threeMovies.add(movie2);
-				threeMovies.add(movie3);
-			}
-			else {
-				threeMovies.add(movie3);
-				threeMovies.add(movie2);
-			}
-		}
-
-		if(max==vote2) {
-			threeMovies.add(movie2);
-			Float max3 = Math.max(vote1, vote3);
-			if(max3==vote1) {
-				threeMovies.add(movie1);
-				threeMovies.add(movie3);
-			}
-			else {
-				threeMovies.add(movie3);
-				threeMovies.add(movie1);
-			}
-		}
-
-		if(max==vote3) {
-			threeMovies.add(movie3);
-			Float max4 = Math.max(vote1, vote2);
-			if(max4==vote1) {
-				threeMovies.add(movie1);
-				threeMovies.add(movie2);
-			}
-			else {
-				threeMovies.add(movie2);
-				threeMovies.add(movie1);
-			}
-		}
-		return threeMovies;
+		threeMovies.add(withinParam.get(startingIndex));
+		threeMovies.add(withinParam.get(startingIndex+1));
+		threeMovies.add(withinParam.get(startingIndex+2));
+		
+		Collections.sort(threeMovies, Collections.reverseOrder());
+		return threeMovies; //3 movies that fit the parameter, in order from greatest avgRating to least
 	}
 
 	/**
@@ -212,9 +197,11 @@ public class Backend implements BackendInterface{
 	@Override
 	public List<String> getAllGenres() {
 		List<String> allGenres = new ArrayList<String>(); //list of all the genres to be returned at the end
-		for(int i=0;i<allMovies.size();i++) { //loop through all the movie objects
-			if(!allGenres.contains(allMovies.get(i).getGenres())) //if allGenres doesn't contain the genre for the given movie object
-				allGenres.addAll(allMovies.get(i).getGenres()); //the genre is then added to the set
+		for(int i=0;i<allMovies.size();i++) {
+			for(String genre : allMovies.get(i).getGenres()) {
+				if(!allGenres.contains(genre))
+					allGenres.add(genre);
+			}
 		}
 		return allGenres; //list of all the genres
 	}

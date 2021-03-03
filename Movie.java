@@ -1,3 +1,12 @@
+// --== CS400 File Header Information ==--
+// Name: Maaz Amin
+// Email: mamin6@wisc.edu
+// Team: DD Red
+// Role: Data Wrangler
+// TA: Dan
+// Lecturer: Gary
+// Notes to Grader: N/A
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,10 +62,10 @@ public class Movie implements MovieInterface {
 	@Override
 	public int compareTo(MovieInterface e) {
 		if (this.avgVote > e.getAvgVote()) {
-			return 1;
+			return -1;
 		}
 		else if (this.avgVote < e.getAvgVote()) {
-			return -1;
+			return 1;
 		}
 		else {
 			return 0;
@@ -72,5 +81,4 @@ public class Movie implements MovieInterface {
 				"Description: " + this.description + "\n" +
 				"Avg. Vote: " + this.avgVote + "\n";
 	}
-
 }

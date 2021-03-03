@@ -1,8 +1,8 @@
 // --== CS400 File Header Information ==--
 // Name: Maaz Amin
 // Email: mamin6@wisc.edu
-// Team: Red
-// Group: DD
+/// Team: DD Red
+// Role: Data Wrangler
 // TA: Dan
 // Lecturer: Gary
 // Notes to Grader: N/A

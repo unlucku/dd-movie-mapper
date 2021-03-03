@@ -1,3 +1,12 @@
+// --== CS400 File Header Information ==--
+// Name: Maaz Amin
+// Email: mamin6@wisc.edu
+// Team: DD Red
+// Role: Data Wrangler
+// TA: Dan
+// Lecturer: Gary
+// Notes to Grader: N/A
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Reader;

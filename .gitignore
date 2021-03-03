@@ -4,5 +4,6 @@
 !readme.md
 !.gitkeep
 !*.java
+!*.txt
 !*/
 /bin/

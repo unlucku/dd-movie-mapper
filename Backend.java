@@ -50,8 +50,8 @@ public class Backend implements BackendInterface{
 	public Backend(Reader s) {
 		genres = new HashTableMap(); //initialize
 		ratings = new HashTableMap(); //initialize
-		List<String> setRatings = new ArrayList<String>(); //initialize
-		List<String> setGenres = new ArrayList<String>(); //initialize
+		setRatings = new ArrayList<String>(); //initialize
+		setGenres = new ArrayList<String>(); //initialize
 		try {
 			dataReader = new MovieDataReader();
 			allMovies = dataReader.readDataSet(s);
@@ -88,7 +88,7 @@ public class Backend implements BackendInterface{
 	 */
 	@Override
 	public void addAvgRating(String rating) {
-		setRatings.add(rating);
+		setRatings.add(rating.substring(0,1));
 		ArrayList<Movie> selectedRatings = new ArrayList<Movie>();
 		for(int i=0;i<allMovies.size();i++) {
 			String k = Float.toString((allMovies.get(i).getAvgVote()));
@@ -164,20 +164,28 @@ public class Backend implements BackendInterface{
 		List<MovieInterface> withinParam = new ArrayList<MovieInterface>(); //list of movies that fit the parameters
 		List<MovieInterface> withinGenre = new ArrayList<MovieInterface>(); //all movies that match at least 1 set genre
 		for(int i=0;i<allMovies.size();i++) { //loop through the set of all movies
+
 			List<String> movieIGenres = allMovies.get(i).getGenres(); //all genres associated with the movie at location i
 			for(int w=0;w<allMovies.get(i).getGenres().size();w++) { //loop through the list of genres for movie at location i
 				if(setGenres.contains(movieIGenres.get(w))) { //if the setGenres contains at least 1 of the genres for movie at location i
 					withinGenre.add(allMovies.get(i)); //the movie is then added to within genre
 					break; //and we break out of the inside loop
 				}
-			if(withinGenre.contains(allMovies.get(i))&&setRatings.contains(Float.toString((allMovies.get(i).getAvgVote())))) {
+			}
+
+			int ratingAsInt = (int)(float) allMovies.get(i).getAvgVote();
+			if(withinGenre.contains(allMovies.get(i))&&setRatings.contains(String.valueOf(ratingAsInt))) {
+				
 				withinParam.add(allMovies.get(i)); //if movie at location i is in the withinGenres list and 
 				//the rating for movie i is in setRatings, it is then added to the withinParam list
-				}
 			}
 		}
-		if(withinParam.isEmpty()) //Empty list returned if within
+
+		if(withinParam.isEmpty()) {
+			//Empty list returned if within
+			System.out.println(getAvgRatings());
 			return withinParam;
+		}
 
 		threeMovies.add(withinParam.get(startingIndex));
 		threeMovies.add(withinParam.get(startingIndex+1));

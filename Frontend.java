@@ -1,4 +1,5 @@
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -81,6 +82,18 @@ public class Frontend {
 		System.out.println("| to the range of ratings you wish to select/unselect.         |");
 		System.out.println("----------------------------------------------------------------\n");
 
+		// ArrayList of whole numbers
+		ArrayList<Integer> wholeNumberRatings = new ArrayList<Integer>();
+
+		// Iterates through list of ratings
+		for (int i = 0; i < backend.getAvgRatings().size(); i++) {
+			// converts String to float
+			float ratingAsFloat = Float.parseFloat(backend.getAvgRatings().get(i));
+
+			// converts float to int and adds it to ArrayList of whole numbers (if not already added)
+			wholeNumberRatings.add((int) ratingAsFloat);
+		}
+
 		// Input options
 		for (int i = 0; i < 10; i++)  {
 			// converts i + 1 to String
@@ -92,11 +105,8 @@ public class Frontend {
 			System.out.print(numAsString + " - " + String.valueOf(i+1.999f));
 
 			// Indicator based on whether or not rating is selected
-			for (String rating : backend.getAvgRatings()) {
+			if (wholeNumberRatings.contains(i+1)) System.out.print(" ----> SELECTED");
 
-				if (rating.substring(0, 1).equals(numAsString)) System.out.print(" ----> SELECTED");
-
-			}
 			System.out.println();
 		}
 		System.out.println();
@@ -105,22 +115,22 @@ public class Frontend {
 			int numberInput = input.nextInt();
 
 			if (numberInput < 10) {
-				String numAsString = String.valueOf(numberInput);
-				boolean isSelected = false;
 
-				for (String rating : backend.getAvgRatings()) {
+				if (wholeNumberRatings.contains(numberInput)) {
 
-					if (rating.substring(0, 1).equals(numAsString)) {
-						isSelected = true;
-						backend.removeAvgRating(rating);
+					for (String rating : backend.getAvgRatings()) {
+
+						if (rating.substring(0, 1).equals(String.valueOf(numberInput))) 
+							backend.removeAvgRating(rating);
+
 					}
 
+				} else {
+					backend.addAvgRating(String.valueOf(numberInput));
 				}
-
-				if (!isSelected) backend.addAvgRating(numAsString);
-
 				ratingMode();
 			}
+
 		}
 
 		while (input.hasNextLine()) {
@@ -185,7 +195,12 @@ public class Frontend {
 			String key = input.nextLine();
 
 			// x key pressed --> program exits
-			if (key.equals("x")) break;
+			if (key.equals("x")) {
+				// Exit message
+				System.out.println("Exiting...");
+				return;
+				//System.exit(0);
+			};
 
 			// g key pressed --> genre mode
 			if (key.equals("g")) genreMode();
@@ -193,9 +208,7 @@ public class Frontend {
 			// r key pressed --> rating mode
 			if (key.equals("r")) ratingMode();
 		}
-		// Exit message
-		System.out.println("Exiting...");
-		return;
+
 	}
 
 	public void run(Backend backend) {
@@ -204,6 +217,7 @@ public class Frontend {
 		this.input = new Scanner(System.in);
 
 		baseMode(0);
+
 	}
 
 	public static void main(String[] args) {

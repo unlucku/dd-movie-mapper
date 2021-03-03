@@ -50,8 +50,8 @@ public class Backend implements BackendInterface{
 	public Backend(Reader s) {
 		genres = new HashTableMap(); //initialize
 		ratings = new HashTableMap(); //initialize
-		List<String> setRatings = new ArrayList<String>(); //initialize
-		List<String> setGenres = new ArrayList<String>(); //initialize
+		setRatings = new ArrayList<String>(); //initialize
+		setGenres = new ArrayList<String>(); //initialize
 		try {
 			dataReader = new MovieDataReader();
 			allMovies = dataReader.readDataSet(s);
